@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interfície de Seguretat Nacional</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #0f0;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('https://media.giphy.com/media/l0HlQ7LRal7hZ4tGo/giphy.gif') repeat;
+      background-size: cover;
+      opacity: 0.09;
+      z-index: -1;
+      animation: matrixRain 10s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes matrixRain {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 1000px; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0);}
+      20%, 60% { transform: translateX(-12px);}
+      40%, 80% { transform: translateX(12px);}
+    }
+    @keyframes flash {
+      0%, 100% { background: black; color: lime;}
+      50% { background: white; color: black;}
+    }
+    @keyframes popup {
+      from { transform: scale(0.8) translate(-50%, -50%); opacity: 0;}
+      to { transform: scale(1) translate(-50%, -50%); opacity: 1;}
+    }
+    @keyframes slideNumber {
+      0% { transform: translateY(-28px); opacity: 0;}
+      100% { transform: translateY(0); opacity: 1;}
+    }
+    #fullscreenOverlay {
+      position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000;
+      z-index:10000;
+      display:flex; align-items:center; justify-content:center; flex-direction:column; color:#0f0;
+    }
+    #fullscreenOverlay button {
+      font-size: 1.3em; color: #000; background: #0f0; border:none; border-radius:10px;
+      padding:18px 48px; font-weight:bold; box-shadow:0 0 14px #0f0; cursor:pointer;
+    }
+    #mainGameBox {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.93);
+      border-radius: 28px;
+      padding: 48px 60px 36px 60px;
+      min-width: 410px;
+      max-width: 100vw;
+      min-height: 440px;
+      max-height: 96vh;
+      margin: 0 auto;
+    }
+    #game {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7em;
+    }
+    #instruction {
+      margin-bottom: 12px;
+      font-size: 1.23em;
+      color: #fff;
+      text-align: center;
+      background: #222;
+      padding: 13px 7px 11px 7px;
+      border: 2px solid #0f0;
+      border-radius: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #timer {
+      margin: 0 0 18px 0;
+      font-size: 2.2em;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      background: rgba(0,0,0,0.85);
+      border: 3px solid #0f0;
+      border-radius: 13px;
+      padding: 13px 0;
+      color: #0f0;
+      box-shadow: 0 0 20px #000, 0 0 6px #0f0;
+      text-align: center;
+      letter-spacing: 2px;
+      user-select: none;
+      pointer-events: none;
+      width: 100%;
+      box-sizing: border-box;
+      z-index: 1;
+      display: block;
+    }
+    .digits {
+      display: flex;
+      gap: 30px;
+      font-size: 3.2em;
+      font-weight: bold;
+      color: lime;
+      letter-spacing: 14px;
+      background-color: rgba(0, 0, 0, 0.89);
+      padding: 18px 0;
+      border: 2.5px solid #0f0;
+      border-radius: 12px;
+      margin: 18px 0;
+      width: 88%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .inputs {
+      display: flex;
+      gap: 32px;
+      margin: 18px 0 12px 0;
+      width: 100%;
+      justify-content: center;
+    }
+    .input {
+      background-color: #111;
+      padding: 48px 0;
+      font-size: 3em;
+      border: 4px solid #0f0;
+      width: 78px;
+      text-align: center;
+      border-radius: 14px;
+      transition: all 0.18s;
+      box-sizing: border-box;
+      box-shadow: 0 0 12px #0f04;
+    }
+    .changing {
+      animation: slideNumber 0.3s ease-out;
+    }
+    #errorMessage {
+      margin-top: 14px;
+      color: red;
+      font-size: 1.4em;
+      min-height: 28px;
+      height: 28px;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      opacity: 1;
+      transition: opacity 0.2s;
+    }
+    #counter {
+      font-size: 1.23em;
+      color: #0f0;
+      margin-top: 10px;
+      width: 100%;
+      text-align: right;
+      letter-spacing: 1px;
+    }
+    .file-system {
+      width: 100vw;
+      max-width: 900px;
+      margin: 0 auto;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.5em;
+      background: rgba(0,0,0,0.93);
+      border-radius: 28px;
+      box-shadow: 0 0 60px #000, 0 0 15px #0f0;
+      border: 3.3px solid #0f0;
+      padding: 42px 24px 34px 24px;
+      min-height: 480px;
+      display: none;
+      flex-direction: column;
+    }
+    .file-system.visible { display: flex; }
+    .files {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-top: 24px;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .file {
+      background: linear-gradient(145deg, #ffe100, #ffcc00);
+      color: black;
+      border: 2.5px solid #888;
+      padding: 18px 0;
+      width: 97%;
+      max-width: 560px;
+      height: 64px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 2px 2px 11px #222;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 1.3em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .file::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 16px;
+      background: #f5d300;
+      border-bottom: 2px solid #aaa;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #000;
+      border: 3px solid #0f0;
+      padding: 40px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      animation: popup 0.3s ease-out;
+      max-width: 94vw;
+      border-radius: 18px;
+      box-sizing: border-box;
+    }
+    .modal.visible {display: flex;}
+    .modal input {
+      font-size: 1.14em;
+      padding: 10px;
+      margin-top: 20px;
+    }
+    .close-btn {
+      margin-top: 24px;
+      cursor: pointer;
+      color: #f00;
+      font-size: 1.1em;
+    }
+    #accessGranted {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: flash 0.8s ease-in-out 2;
+    }
+    #failedOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.98);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 42px;
+      transition: opacity 0.6s;
+      opacity: 1;
+    }
+    #failedOverlay h1 {
+      font-size: 7vw;
+      color: #f00;
+      margin: 0 0 18px 0;
+      text-align: center;
+      letter-spacing: 2px;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      text-shadow: 0 0 30px #900, 0 0 12px #fff;
+      line-height: 1.1;
+    }
+    #failedOverlay button {
+      font-size: 1.65em;
+      color: #fff;
+      background: #0f0;
+      border: none;
+      border-radius: 12px;
+      padding: 26px 68px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 18px #0f0;
+      transition: background 0.2s, color 0.2s;
+    }
+    #failedOverlay button:hover {
+      background: #fff;
+      color: #0f0;
+    }
+    @media (max-width: 900px) {
+      .file-system { max-width: 99vw; }
+      .file { font-size: 1.11em; max-width: 99vw; }
+      #mainGameBox {min-width: 96vw; padding: 8vw 0; }
+    }
+    @media (max-width: 600px) {
+      #mainGameBox {min-width: 99vw; padding: 4vw 0;}
+      .digits { font-size: 1.7em; gap: 9px;}
+      .inputs .input { font-size: 1.7em; padding: 17px 0; width: 45px;}
+      #timer { font-size: 1.19em; padding: 7px 0;}
+      #instruction { font-size: 1em; padding: 7px 4px;}
+      .file { font-size: 0.99em; height: 38px;}
+      h2 { font-size: 1.2em;}
+      #failedOverlay h1 { font-size: 3em; }
+    }
+  </style>
+</head>
+<body>
+  <div id="fullscreenOverlay">
+    <h2 style="margin-bottom:32px; font-size:2em;">Fes clic per començar en pantalla completa</h2>
+    <button onclick="startFullscreenAndGame()">Començar</button>
+  </div>
+  <div id="mainGameBox" style="display:none;">
+    <div id="game" class="screen visible">
+      <div id="instruction">Fes clic a la pantalla quan el número coincideixi</div>
+      <div id="timer"></div>
+      <div class="digits" id="passwordDisplay"></div>
+      <div class="inputs" id="inputs">
+        <div class="input">-</div>
+        <div class="input">-</div>
+        <div class="input">-</div>
+        <div class="input">-</div>
+      </div>
+      <div id="errorMessage"></div>
+      <div id="counter">Tallafocs travessats: 0 / 2</div>
+    </div>
+  </div>
+  <div id="fileSystem" class="file-system">
+    <h2>📁 ARXIUS DEL SISTEMA</h2>
+    <div class="files">
+      <div class="file" onclick="openFile('topsecret')">📁 TOP SECRET</div>
+      <div class="file" onclick="openFile('doc1')">📁 Projecte FASE-17</div>
+      <div class="file" onclick="openFile('doc2')">📁 Informe R-41</div>
+      <div class="file" onclick="openFile('bomb')">📁 Desactivació Bombes</div>
+    </div>
+  </div>
+  <div id="accessGranted" class="screen">
+    <h2 style="font-size: 2.2em; color: lime;">🔓 ACCÉS CONCEDIT</h2>
+  </div>
+  <div id="topsecret" class="modal"></div>
+  <div id="doc1" class="modal"></div>
+  <div id="doc2" class="modal"></div>
+  <div id="bomb" class="modal"></div>
+  <div id="failedOverlay" style="display:none;">
+    <h1>HACKEIG<br>FALLIT</h1>
+    <button onclick="reiniciarTodo()">Reintentar</button>
+  </div>
+  <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+  <script>
+    function startFullscreenAndGame() {
+      const body = document.documentElement;
+      if (body.requestFullscreen) {
+        body.requestFullscreen();
+      } else if (body.webkitRequestFullscreen) {
+        body.webkitRequestFullscreen();
+      } else if (body.msRequestFullscreen) {
+        body.msRequestFullscreen();
+      }
+      document.getElementById('fullscreenOverlay').style.display = 'none';
+      document.getElementById('mainGameBox').style.display = 'flex';
+      generatePassword();
+      updateCounter();
+      startTimer();
+      setTimeout(() => {
+        startSlot();
+      }, 200);
+    }
+
+    let password = [];
+    let userInput = [null, null, null, null];
+    let currentSlot = 0;
+    let interval;
+    let successCount = 0;
+
+    let timeLeft = 60.00;
+    let timer;
+    let timerActive = true;
+    let timerColorInterval;
+    let timerColorState = true;
+    let colorChangeRate = 500;
+
+    function formatTime(t) {
+      return (t > 0 ? t : 0).toFixed(2).replace('.', ',') + 's';
+    }
+    function animateTimerColor() {
+      clearInterval(timerColorInterval);
+      timerColorInterval = setInterval(() => {
+        timerColorState = !timerColorState;
+        const timerDiv = document.getElementById('timer');
+        if (timerColorState) {
+          timerDiv.style.color = '#0f0';
+          timerDiv.style.borderColor = '#0f0';
+          timerDiv.style.boxShadow = '0 0 20px #000, 0 0 6px #0f0';
+        } else {
+          timerDiv.style.color = '#f00';
+          timerDiv.style.borderColor = '#f00';
+          timerDiv.style.boxShadow = '0 0 20px #000, 0 0 6px #f00';
+        }
+      }, colorChangeRate);
+    }
+    function updateTimer() {
+      const timerDiv = document.getElementById('timer');
+      timerDiv.textContent = `⏳ ${formatTime(timeLeft)}`;
+      if (timeLeft <= 0 && timerActive) {
+        timerActive = false;
+        clearInterval(timer);
+        clearInterval(timerColorInterval);
+        mostrarHackeoFallido();
+      }
+    }
+    function mostrarHackeoFallido() {
+      document.getElementById('failedOverlay').style.display = "flex";
+      document.getElementById('mainGameBox').style.display = "none";
+    }
+    function reiniciarTodo() {
+      document.getElementById('failedOverlay').style.display = "none";
+      location.reload();
+    }
+    function startTimer() {
+      timerActive = true;
+      timeLeft = 60.00;
+      colorChangeRate = 500;
+      animateTimerColor();
+      updateTimer();
+      document.getElementById('timer').style.display = "block";
+      timer = setInterval(() => {
+        if (!timerActive) return;
+        timeLeft -= 0.02;
+        if (timeLeft < 0) timeLeft = 0;
+        updateTimer();
+        if (timeLeft <= 15 && colorChangeRate !== 250) {
+          colorChangeRate = 250;
+          animateTimerColor();
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          clearInterval(timerColorInterval);
+        }
+      }, 20);
+    }
+    function stopTimer() {
+      timerActive = false;
+      clearInterval(timer);
+      clearInterval(timerColorInterval);
+      document.getElementById('timer').style.display = "none";
+    }
+    function generatePassword() {
+      password = Array.from({ length: 4 }, () => Math.floor(Math.random() * 9) + 1);
+      document.getElementById('passwordDisplay').innerHTML = password.join(' ');
+    }
+    function updateCounter() {
+      document.getElementById('counter').textContent = `Tallafocs travessats: ${successCount} / 2`;
+    }
+    function resetGame(error = false) {
+      userInput = [null, null, null, null];
+      currentSlot = 0;
+      clearInterval(interval);
+      document.querySelectorAll('#inputs .input').forEach(el => el.textContent = '-');
+      const errorDiv = document.getElementById('errorMessage');
+      if (error) {
+        document.body.classList.add('shake');
+        errorDiv.textContent = 'Fallit';
+        errorDiv.style.opacity = 1;
+        setTimeout(() => {
+          document.body.classList.remove('shake');
+          errorDiv.style.opacity = 0;
+          errorDiv.textContent = '';
+        }, 1000);
+      } else {
+        errorDiv.textContent = '';
+      }
+      generatePassword();
+      setTimeout(startSlot, 900);
+    }
+    function startSlot() {
+      const box = document.querySelectorAll('#inputs .input')[currentSlot];
+      let number = 1;
+      box.textContent = number;
+      // Velocitats fixes: 800ms, 700ms, 600ms, 550ms
+      const speeds = [800, 700, 600, 550];
+      let speed = speeds[currentSlot];
+      interval = setInterval(() => {
+        number = number % 9 + 1;
+        box.textContent = number;
+        box.classList.add('changing');
+        setTimeout(() => box.classList.remove('changing'), 180);
+      }, speed);
+      window.onclick = () => {
+        if (userInput[currentSlot] === null) {
+          userInput[currentSlot] = number;
+          clearInterval(interval);
+          window.onclick = null;
+          currentSlot++;
+          if (currentSlot < 4) {
+            setTimeout(startSlot, 400);
+          } else {
+            setTimeout(() => {
+              if (JSON.stringify(userInput) === JSON.stringify(password)) {
+                successCount++;
+                updateCounter();
+                if (successCount >= 2) {
+                  stopTimer();
+                  document.getElementById('mainGameBox').style.display = "none";
+                  const accessScreen = document.getElementById('accessGranted');
+                  const fileSystem = document.getElementById('fileSystem');
+                  const sound = document.getElementById('accessSound');
+                  accessScreen.classList.add('visible');
+                  sound.play();
+                  setTimeout(() => {
+                    accessScreen.classList.remove('visible');
+                    fileSystem.classList.add('visible');
+                  }, 1700);
+                } else {
+                  resetGame();
+                }
+              } else {
+                resetGame(true);
+              }
+            }, 400);
+          }
+        }
+      }
+    }
+    function openFile(id) {
+      const modal = document.getElementById(id);
+      modal.innerHTML = '<div style="font-size:1.08em; margin-bottom:8px">Carregant...</div>';
+      modal.classList.add('visible');
+      setTimeout(() => {
+        if (id === 'bomb') {
+          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivació de bombes generalitzat és el <b style="color:red;">vermell</b></div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+        } else if (id === 'topsecret') {
+          modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introdueix la contrasenya per accedir a<br><strong>TOP SECRET</strong>:</div><input type="password" /><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+        } else if (id === 'doc1') {
+          modal.innerHTML = '<div style="font-size:1em;">Projecte FASE-17: <br>Arxiu classificat.<br>Accés restringit.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+        } else if (id === 'doc2') {
+          modal.innerHTML = '<div style="font-size:1em;">Informe R-41: <br>Informació confidencial.<br>Només personal autoritzat.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+        } else {
+          modal.innerHTML = '<div style="font-size:1em; color:red">❌ Error en obrir l\'arxiu</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+        }
+      }, id === 'bomb' ? 500 : 1000);
+    }
+    function hideModal(id) {
+      document.getElementById(id).classList.remove('visible');
+    }
+  </script>
+</body>
+</html>
