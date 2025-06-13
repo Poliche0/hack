@@ -354,7 +354,7 @@
       color: #242424;
       border: 2px solid #bcae5b;
       padding: 13px 0;
-      width: 100%; /* Cambiado de 230px a 100% para mostrar el nombre completo */
+      width: 100%;
       min-width: 230px;
       max-width: 520px;
       height: 48px;
@@ -370,11 +370,11 @@
       position: relative;
       box-sizing: border-box;
       user-select: none;
-      overflow-x: auto; /* Añadido para que no se corte el texto */
-      white-space: nowrap; /* Mantener el nombre en una sola línea */
+      overflow-x: auto;
+      white-space: nowrap;
     }
     .topsecret-file::-webkit-scrollbar {
-      display: none; /* Oculta scrollbar pero deja el scroll horizontal si es necesario */
+      display: none;
     }
     .topsecret-file::before {
       content: "";
@@ -713,8 +713,11 @@
       {
         name: "Informe_42-Delta.bmp",
         img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXyOSsjWhTy9wgofWSxi9LU96OjeljZkWzJw&s"
+      },
+      {
+        name: "Comandament_root_access.key",
+        img: "https://stickerly.pstatic.net/sticker_pack/W24p3JnOIKZsoGKBGaHA/9VX10Z/10/ebdcb413-d81c-4c1b-937c-8539ace76c38.png"
       }
-      // Eliminado el duplicado, ahora hay 5 archivos. Si quieres que sean 6, agrega uno nuevo diferente aquí.
     ];
 
     function checkTopSecretPassword() {
