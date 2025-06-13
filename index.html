@@ -438,6 +438,11 @@
       #topsecret-files-section { min-width: 90vw; padding: 4vw 0;}
       .topsecret-file { font-size: 0.95em;}
     }
+    .blue-word {
+      color: #2196f3;
+      font-weight: bold;
+      text-shadow: 0 0 10px #2196f3, 0 0 5px #03a9f4;
+    }
   </style>
 </head>
 <body>
@@ -669,7 +674,7 @@
       modal.classList.add('visible');
       setTimeout(() => {
         if (id === 'bomb') {
-          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivació no és mai el vermell.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">Has de tallar el cable <span class="blue-word">blau</span>.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else if (id === 'topsecret') {
           modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introdueix la contrasenya per accedir a<br><strong>TOP SECRET</strong>:</div>\
             <input id="topsecret-password-input" type="password" style="font-size:1.08em; padding:8px; text-align:center; border-radius:8px; border:1.5px solid #ffe100; outline:none;" autofocus>\
