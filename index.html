@@ -443,6 +443,19 @@
       font-weight: bold;
       text-shadow: 0 0 10px #2196f3, 0 0 5px #03a9f4;
     }
+    #calabaza-hint {
+      position: fixed;
+      left: 7px;
+      bottom: 3px;
+      font-size: 0.56em;
+      color: #ffe100;
+      opacity: 0.72;
+      z-index: 10100;
+      pointer-events: none;
+      letter-spacing: 1px;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
   </style>
 </head>
 <body>
@@ -492,6 +505,7 @@
   </div>
   <!-- Modals para imágenes -->
   <div id="topsecret-img-modal" class="topsecret-img-modal"></div>
+  <div id="calabaza-hint">calabaza</div>
   <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <script>
     function startFullscreenAndGame() {
@@ -505,6 +519,7 @@
       }
       document.getElementById('fullscreenOverlay').style.display = 'none';
       document.getElementById('mainGameBox').style.display = 'flex';
+      document.getElementById('calabaza-hint').style.display = 'none';
       generatePassword();
       updateCounter();
       startTimer();
