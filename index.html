@@ -319,6 +319,7 @@
       background: #fff;
       color: #0f0;
     }
+
     /* --- NUEVA SECCIÓN TOP SECRET DESBLOQUEADA --- */
     #topsecret-files-section {
       position: fixed;
@@ -353,7 +354,9 @@
       color: #242424;
       border: 2px solid #bcae5b;
       padding: 13px 0;
-      width: 230px;
+      width: 100%; /* Cambiado de 230px a 100% para mostrar el nombre completo */
+      min-width: 230px;
+      max-width: 520px;
       height: 48px;
       text-align: center;
       cursor: pointer;
@@ -367,6 +370,11 @@
       position: relative;
       box-sizing: border-box;
       user-select: none;
+      overflow-x: auto; /* Añadido para que no se corte el texto */
+      white-space: nowrap; /* Mantener el nombre en una sola línea */
+    }
+    .topsecret-file::-webkit-scrollbar {
+      display: none; /* Oculta scrollbar pero deja el scroll horizontal si es necesario */
     }
     .topsecret-file::before {
       content: "";
@@ -661,12 +669,12 @@
       modal.classList.add('visible');
       setTimeout(() => {
         if (id === 'bomb') {
-          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivació correcte és el <b>blau</b>. Talla qualsevol altre i...</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivació no és mai el vermell.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else if (id === 'topsecret') {
           modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introdueix la contrasenya per accedir a<br><strong>TOP SECRET</strong>:</div>\
             <input id="topsecret-password-input" type="password" style="font-size:1.08em; padding:8px; text-align:center; border-radius:8px; border:1.5px solid #ffe100; outline:none;" autofocus>\
             <div id="topsecret-error" style="color:red; margin-top:9px; min-height:20px;font-size:1em;"></div>\
-            <div style="text-align:center;"><button onclick="checkTopSecretPassword()" style="margin-top: 10px; font-size:1em; background:#ffe100; color:#222; border:none; border-radius:8px; padding:10px 30px; font-weight:bold; cursor:pointer;">Entrar</button></div>\
+            <div style="text-align:center;"><button onclick="checkTopSecretPassword()" style="margin-top: 10px; font-size:1em; background:#ffe100; color:#222; border:none; border-radius:8px; padding: 6px 16px; cursor:pointer; font-weight:bold;">Entrar</button></div>\
             <div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
           setTimeout(() => {
             document.getElementById('topsecret-password-input').focus();
@@ -705,12 +713,10 @@
       {
         name: "Informe_42-Delta.bmp",
         img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXyOSsjWhTy9wgofWSxi9LU96OjeljZkWzJw&s"
-      },
-      {
-        name: "Comandament_root_access.key",
-        img: "https://media.tenor.com/ULlFZmjJz3kAAAAm/cat.webp"
       }
+      // Eliminado el duplicado, ahora hay 5 archivos. Si quieres que sean 6, agrega uno nuevo diferente aquí.
     ];
+
     function checkTopSecretPassword() {
       const input = document.getElementById('topsecret-password-input');
       const error = document.getElementById('topsecret-error');
