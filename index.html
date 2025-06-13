@@ -319,10 +319,104 @@
       background: #fff;
       color: #0f0;
     }
+    /* --- NUEVA SECCIÓN TOP SECRET DESBLOQUEADA --- */
+    #topsecret-files-section {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111;
+      border: 3px solid #f5d300;
+      padding: 40px 26px 32px 26px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 25;
+      animation: popup 0.3s ease-out;
+      max-width: 96vw;
+      border-radius: 22px;
+      box-sizing: border-box;
+      min-width: 320px;
+      min-height: 320px;
+    }
+    #topsecret-files-section.visible { display: flex; }
+    #topsecret-files-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .topsecret-file {
+      background: linear-gradient(145deg, #e2ddc3, #c8c2a6);
+      color: #242424;
+      border: 2px solid #bcae5b;
+      padding: 13px 0;
+      width: 230px;
+      height: 48px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 2px 2px 11px #222;
+      border-radius: 11px;
+      font-weight: bold;
+      font-size: 1.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .topsecret-file::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 13px;
+      background: #f5d300;
+      border-bottom: 2px solid #aaa;
+      border-top-left-radius: 11px;
+      border-top-right-radius: 11px;
+    }
+    .topsecret-img-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #000;
+      border: 3px solid #f5d300;
+      padding: 30px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 80;
+      animation: popup 0.3s ease-out;
+      border-radius: 22px;
+      box-sizing: border-box;
+      max-width: 96vw;
+      max-height: 94vh;
+    }
+    .topsecret-img-modal.visible { display: flex; }
+    .topsecret-img-modal img {
+      max-width: 70vw;
+      max-height: 60vh;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #ffe100;
+    }
+    .topsecret-img-modal .close-btn {
+      margin-top: 18px;
+      color: #f00;
+      font-weight: bold;
+      cursor: pointer;
+    }
     @media (max-width: 900px) {
       .file-system { max-width: 99vw; }
       .file { font-size: 1.11em; max-width: 99vw; }
       #mainGameBox {min-width: 96vw; padding: 8vw 0; }
+      #topsecret-files-section { max-width: 99vw; padding: 7vw 1vw;}
+      .topsecret-file { width: 98vw;}
     }
     @media (max-width: 600px) {
       #mainGameBox {min-width: 99vw; padding: 4vw 0;}
@@ -333,6 +427,8 @@
       .file { font-size: 0.99em; height: 38px;}
       h2 { font-size: 1.2em;}
       #failedOverlay h1 { font-size: 3em; }
+      #topsecret-files-section { min-width: 90vw; padding: 4vw 0;}
+      .topsecret-file { font-size: 0.95em;}
     }
   </style>
 </head>
@@ -376,6 +472,13 @@
     <h1>HACKEIG<br>FALLIT</h1>
     <button onclick="reiniciarTodo()">Reintentar</button>
   </div>
+  <div id="topsecret-files-section">
+    <h2 style="color:#ffe100; text-align:center; margin-bottom:20px;">📂 TOP SECRET - Arxius Confidencials</h2>
+    <div id="topsecret-files-list"></div>
+    <div class="close-btn" onclick="closeTopSecretFiles()">❌ Tancar</div>
+  </div>
+  <!-- Modals para imágenes -->
+  <div id="topsecret-img-modal" class="topsecret-img-modal"></div>
   <audio id="accessSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <script>
     function startFullscreenAndGame() {
@@ -558,9 +661,16 @@
       modal.classList.add('visible');
       setTimeout(() => {
         if (id === 'bomb') {
-          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivació de bombes generalitzat és el <b style="color:blue;">blau</b></div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+          modal.innerHTML = '<h2 style="color:red;font-size:1.15em; margin-bottom:18px;">Desactivació Bombes</h2><div style="font-size:1.18em; color:#fff; margin-bottom:18px;">El cable de desactivació correcte és el <b>blau</b>. Talla qualsevol altre i...</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else if (id === 'topsecret') {
-          modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introdueix la contrasenya per accedir a<br><strong>TOP SECRET</strong>:</div><input type="password" /><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+          modal.innerHTML = '<div style="font-size: 1.1em; margin-bottom: 12px; text-align:center">Introdueix la contrasenya per accedir a<br><strong>TOP SECRET</strong>:</div>\
+            <input id="topsecret-password-input" type="password" style="font-size:1.08em; padding:8px; text-align:center; border-radius:8px; border:1.5px solid #ffe100; outline:none;" autofocus>\
+            <div id="topsecret-error" style="color:red; margin-top:9px; min-height:20px;font-size:1em;"></div>\
+            <div style="text-align:center;"><button onclick="checkTopSecretPassword()" style="margin-top: 10px; font-size:1em; background:#ffe100; color:#222; border:none; border-radius:8px; padding:10px 30px; font-weight:bold; cursor:pointer;">Entrar</button></div>\
+            <div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
+          setTimeout(() => {
+            document.getElementById('topsecret-password-input').focus();
+          }, 250);
         } else if (id === 'doc1') {
           modal.innerHTML = '<div style="font-size:1em;">Projecte FASE-17: <br>Arxiu classificat.<br>Accés restringit.</div><div class="close-btn" onclick="hideModal(\'' + id + '\')">❌ Tancar</div>';
         } else if (id === 'doc2') {
@@ -573,6 +683,86 @@
     function hideModal(id) {
       document.getElementById(id).classList.remove('visible');
     }
+
+    // --------- TOP SECRET PASSWORD y ARCHIVOS SECCIÓN ---------
+    const topSecretFiles = [
+      {
+        name: "Protocol-X9_Desencriptat.pdf",
+        img: "https://ih1.redbubble.net/image.5568953549.0392/raf,360x360,075,t,fafafa:ca443f4786.jpg"
+      },
+      {
+        name: "Personal_Risk_Report.gpg",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZ3K45XJLaMdgOZiMKNdeksW6S-3-768JY5g&s"
+      },
+      {
+        name: "Agent-Files-Kitler.jpg",
+        img: "https://i.blogs.es/671f64/kitler/450_1000.jpg"
+      },
+      {
+        name: "Operacio_Sphinx.catdat",
+        img: "https://media.tenor.com/ULlFZmjJz3kAAAAm/cat.webp"
+      },
+      {
+        name: "Informe_42-Delta.bmp",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXyOSsjWhTy9wgofWSxi9LU96OjeljZkWzJw&s"
+      },
+      {
+        name: "Comandament_root_access.key",
+        img: "https://media.tenor.com/ULlFZmjJz3kAAAAm/cat.webp"
+      }
+    ];
+    function checkTopSecretPassword() {
+      const input = document.getElementById('topsecret-password-input');
+      const error = document.getElementById('topsecret-error');
+      const pass = input.value.trim();
+      if (pass.toLowerCase() === "calabaza") {
+        document.getElementById('topsecret').classList.remove('visible');
+        showTopSecretFilesSection();
+      } else {
+        error.textContent = "Contrasenya incorrecta";
+        input.value = "";
+        input.focus();
+      }
+    }
+    function showTopSecretFilesSection() {
+      const section = document.getElementById('topsecret-files-section');
+      const list = document.getElementById('topsecret-files-list');
+      list.innerHTML = "";
+      topSecretFiles.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = "topsecret-file";
+        div.textContent = "📄 " + item.name;
+        div.onclick = () => showTopSecretImg(idx);
+        list.appendChild(div);
+      });
+      section.classList.add('visible');
+    }
+    function closeTopSecretFiles() {
+      document.getElementById('topsecret-files-section').classList.remove('visible');
+    }
+    function showTopSecretImg(idx) {
+      const modal = document.getElementById('topsecret-img-modal');
+      const file = topSecretFiles[idx];
+      modal.innerHTML = `<img src="${file.img}" alt="top secret file" /><div class="close-btn" onclick="closeTopSecretImg()">❌ Tancar</div>`;
+      modal.classList.add('visible');
+    }
+    function closeTopSecretImg() {
+      document.getElementById('topsecret-img-modal').classList.remove('visible');
+    }
+    // Permitir enter para la contraseña
+    document.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('topsecret');
+      if (modal.classList.contains('visible') && document.getElementById('topsecret-password-input')) {
+        if (e.key === 'Enter') checkTopSecretPassword();
+      }
+      // Escape para cerrar modals de imagen
+      if (e.key === 'Escape') {
+        closeTopSecretImg();
+        closeTopSecretFiles();
+        // Cierra modal topsecret si está visible
+        if (modal.classList.contains('visible')) hideModal('topsecret');
+      }
+    });
   </script>
 </body>
 </html>
